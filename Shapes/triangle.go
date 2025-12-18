@@ -29,7 +29,7 @@ func (t *Triangle) Validate() bool {
 }
 
 func (t *Triangle) Area() float64 {
-	if t.Validate() {
+	if !t.Validate() {
 		return 0
 	}
 	semi := (t.Side1 + t.Side2 + t.Side3) / 2 // semi-perimeter

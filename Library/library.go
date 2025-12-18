@@ -6,23 +6,30 @@ import (
 )
 
 type Library struct {
-	a map[string]Book
+	books map[string]Book
+}
+
+func (l *Library) GetNextID() int {
+	if l.books == nil {
+		return 1
+	}
+	return len(l.books) + 1
 }
 
 func (l *Library) AddBook(book Book) {
-	if l.a == nil {
-		l.a = make(map[string]Book)
+	if l.books == nil {
+		l.books = make(map[string]Book)
 	}
-	l.a[strconv.Itoa(book.ID)] = book
+	l.books[strconv.Itoa(book.ID)] = book
 }
 
 func (l *Library) BorrowBook(ID int) (Book, error) {
-	if l.a == nil {
+	if l.books == nil {
 		return Book{}, errors.New("library is empty")
 	}
 
 	key := strconv.Itoa(ID)
-	book, ok := l.a[key]
+	book, ok := l.books[key]
 	if !ok {
 		return Book{}, errors.New("book not found")
 	}
@@ -32,17 +39,17 @@ func (l *Library) BorrowBook(ID int) (Book, error) {
 	}
 
 	book.IsBorrowed = true
-	l.a[key] = book
+	l.books[key] = book
 	return book, nil
 }
 
 func (l *Library) ReturnBook(ID int) error {
-	if l.a == nil {
+	if l.books == nil {
 		return errors.New("library is empty")
 	}
 
 	key := strconv.Itoa(ID)
-	book, ok := l.a[key]
+	book, ok := l.books[key]
 	if !ok {
 		return errors.New("book not found")
 	}
@@ -52,21 +59,22 @@ func (l *Library) ReturnBook(ID int) error {
 	}
 
 	book.IsBorrowed = false
-	l.a[key] = book
+	l.books[key] = book
 	return nil
 }
 
 func (l *Library) ListAvailableBooks() ([]Book, error) {
-	if l.a == nil {
+	if l.books == nil {
 		return []Book{}, errors.New("library is empty")
 	}
 
-	var books []Book
-	for _, book := range l.a {
+	var availableBooks []Book
+	for _, book := range l.books {
 		if !book.IsBorrowed {
-			books = append(books, book)
+			availableBooks = append(availableBooks, book)
 		}
 	}
 
-	return books, nil
+	return availableBooks, nil
 }
+
